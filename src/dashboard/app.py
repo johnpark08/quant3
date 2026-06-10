@@ -677,7 +677,6 @@ def render_outro() -> None:
         - 시나리오별 종목 민감도와 백테스트 성과 지표 추가
         """
     )
-    st.success("현재 버전은 발표용 전체 파이프라인 흐름과 핵심 결과 설명 가능 상태.")
 
 
 if selected_page == "인트로":
