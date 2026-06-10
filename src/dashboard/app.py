@@ -284,6 +284,53 @@ portfolio_expected_risk = float(((weights["predicted_volatility"] * weights["wei
 portfolio_sharpe = portfolio_expected_return / portfolio_expected_risk if portfolio_expected_risk else 0.0
 
 
+def render_portfolio_decision() -> None:
+    st.subheader("최종 포트폴리오 의사결정")
+    metric_left, metric_middle, metric_right = st.columns(3)
+    metric_left.metric("포트폴리오 예상 수익률", f"{portfolio_expected_return * 100:.2f}%")
+    metric_middle.metric("포트폴리오 예상 위험", f"{portfolio_expected_risk * 100:.2f}%")
+    metric_right.metric("위험 대비 수익률", f"{portfolio_sharpe:.2f}")
+
+    top_weight = weights.loc[weights["weight"].idxmax()]
+    bottom_weight = weights.loc[weights["weight"].idxmin()]
+    top_return = weights.loc[weights["expected_return"].idxmax()]
+    top_risk = weights.loc[weights["predicted_volatility"].idxmax()]
+
+    with st.container(border=True):
+        st.markdown("포트폴리오 자동 해석")
+        st.markdown(
+            f"`{selected_model}` 기준 최적 포트폴리오는 `{top_weight['ticker']}` 비중이 가장 높음 "
+            f"({top_weight['weight'] * 100:.1f}%). 이는 예측 수익률과 예측 변동성을 함께 고려했을 때 "
+            "위험 대비 기여도가 가장 높게 평가된 결과."
+        )
+        st.markdown(
+            f"예상 수익률이 가장 높은 종목은 `{top_return['ticker']}`({top_return['expected_return'] * 100:.2f}%)이고, "
+            f"예측 변동성이 가장 높은 종목은 `{top_risk['ticker']}`({top_risk['predicted_volatility'] * 100:.2f}%). "
+            f"`{bottom_weight['ticker']}`는 최저 비중({bottom_weight['weight'] * 100:.1f}%)."
+        )
+
+    left, right = st.columns([1, 1])
+    with left:
+        st.subheader("포트폴리오 투자 비중")
+        fig = px.pie(weights, names="ticker", values="weight", hole=0.45, labels={"ticker": "종목", "weight": "투자 비중"})
+        st.plotly_chart(fig, use_container_width=True)
+        st.caption("비중이 클수록 선택 모델 기준 위험 대비 기대수익이 높게 평가된 자산.")
+
+    with right:
+        st.subheader("최근 예측 결과")
+        forecast_table = weights.assign(weight_pct=lambda frame: frame["weight"] * 100)[
+            ["ticker", "expected_return", "predicted_volatility", "weight_pct"]
+        ].rename(
+            columns={
+                "ticker": "종목",
+                "expected_return": "예상 수익률",
+                "predicted_volatility": "예측 변동성",
+                "weight_pct": "투자 비중(%)",
+            }
+        )
+        st.dataframe(forecast_table, use_container_width=True, hide_index=True)
+
+
 def render_intro() -> None:
     st.markdown(
         """
@@ -494,50 +541,6 @@ def render_result() -> None:
         f"수익률 조정 {scenario['return_shift'] * 100:.2f}%p, 변동성 배율 {scenario['vol_multiplier']:.2f}배 반영."
     )
 
-    metric_left, metric_middle, metric_right = st.columns(3)
-    metric_left.metric("포트폴리오 예상 수익률", f"{portfolio_expected_return * 100:.2f}%")
-    metric_middle.metric("포트폴리오 예상 위험", f"{portfolio_expected_risk * 100:.2f}%")
-    metric_right.metric("위험 대비 수익률", f"{portfolio_sharpe:.2f}")
-
-    top_weight = weights.loc[weights["weight"].idxmax()]
-    bottom_weight = weights.loc[weights["weight"].idxmin()]
-    top_return = weights.loc[weights["expected_return"].idxmax()]
-    top_risk = weights.loc[weights["predicted_volatility"].idxmax()]
-
-    with st.container(border=True):
-        st.markdown("포트폴리오 자동 해석")
-        st.markdown(
-            f"`{selected_model}` 기준 최적 포트폴리오는 `{top_weight['ticker']}` 비중이 가장 높음 "
-            f"({top_weight['weight'] * 100:.1f}%). 이는 예측 수익률과 예측 변동성을 함께 고려했을 때 "
-            "위험 대비 기여도가 가장 높게 평가된 결과."
-        )
-        st.markdown(
-            f"예상 수익률이 가장 높은 종목은 `{top_return['ticker']}`({top_return['expected_return'] * 100:.2f}%)이고, "
-            f"예측 변동성이 가장 높은 종목은 `{top_risk['ticker']}`({top_risk['predicted_volatility'] * 100:.2f}%). "
-            f"`{bottom_weight['ticker']}`는 최저 비중({bottom_weight['weight'] * 100:.1f}%)."
-        )
-
-    left, right = st.columns([1, 1])
-    with left:
-        st.subheader("포트폴리오 투자 비중")
-        fig = px.pie(weights, names="ticker", values="weight", hole=0.45, labels={"ticker": "종목", "weight": "투자 비중"})
-        st.plotly_chart(fig, use_container_width=True)
-        st.caption("비중이 클수록 선택 모델 기준 위험 대비 기대수익이 높게 평가된 자산.")
-
-    with right:
-        st.subheader("최근 예측 결과")
-        forecast_table = weights.assign(weight_pct=lambda frame: frame["weight"] * 100)[
-            ["ticker", "expected_return", "predicted_volatility", "weight_pct"]
-        ].rename(
-            columns={
-                "ticker": "종목",
-                "expected_return": "예상 수익률",
-                "predicted_volatility": "예측 변동성",
-                "weight_pct": "투자 비중(%)",
-            }
-        )
-        st.dataframe(forecast_table, use_container_width=True, hide_index=True)
-
     st.subheader("예측 추세")
     selected_ticker = st.selectbox("종목", sorted(model_predictions["ticker"].unique()))
     ticker_predictions = model_predictions[model_predictions["ticker"] == selected_ticker]
@@ -686,6 +689,7 @@ def render_outro() -> None:
         - 모델 비교, 거시 시나리오, 리밸런싱 비중 변화까지 Streamlit으로 통합
         """
     )
+    render_portfolio_decision()
     st.subheader("최종 결론")
     st.write(
         "거시경제 변수 결합과 장단기 변동성 분해를 통해 단순 예측이 아닌 위험 기반 포트폴리오 의사결정 구조 구현."
