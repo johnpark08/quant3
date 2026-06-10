@@ -1,0 +1,10 @@
+indicator,fred_code,source,rows
+fed_funds,FEDFUNDS,cache,101
+cpi,CPIAUCSL,cache,100
+m2,M2SL,cache,100
+ppi,PPIACO,bls,100
+industrial_production,INDPRO,federal_reserve,96
+wti_oil,DCOILWTICO,yahoo,2122
+usd_krw,DEXKOUS,yahoo,2196
+dollar_index,DTWEXBGS,yahoo,2122
+vix,VIXCLS,yahoo,2121

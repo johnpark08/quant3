@@ -1,0 +1,35 @@
+assets:
+  - AAPL
+  - MSFT
+  - GOOGL
+  - AMZN
+  - META
+  - TSLA
+  - NVDA
+
+macro_indicators:
+  fed_funds: FEDFUNDS
+  cpi: CPIAUCSL
+  m2: M2SL
+  ppi: PPIACO
+  industrial_production: INDPRO
+  wti_oil: DCOILWTICO
+  usd_krw: DEXKOUS
+  dollar_index: DTWEXBGS
+  vix: VIXCLS
+
+start_date: "2018-01-01"
+end_date: null
+
+paths:
+  raw_prices: data/raw/raw_prices.parquet
+  raw_macro: data/raw/raw_macro.parquet
+  training_dataset: data/processed/training_dataset.parquet
+  predictions: data/predictions/predictions.parquet
+  portfolio_weights: data/predictions/portfolio_weights.parquet
+
+model:
+  test_size: 0.2
+  random_state: 42
+  volatility_window: 21
+  forecast_horizon_days: 20
