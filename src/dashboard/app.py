@@ -140,22 +140,17 @@ garch_midas_params = pd.read_csv(garch_midas_params_path) if garch_midas_params_
 available_models = sorted(predictions["model"].unique()) if "model" in predictions.columns else ["RandomForest"]
 default_model_index = available_models.index("GARCH-MIDAS") if "GARCH-MIDAS" in available_models else 0
 
-st.sidebar.title("발표 네비게이션")
-selected_page = st.sidebar.radio(
-    "섹션",
-    ["INTRO", "BACKGROUND", "DATAFLOW", "RESULT", "OUTRO"],
-    index=0,
-)
+section_pages = ["INTRO", "BACKGROUND", "DATAFLOW", "RESULT", "OUTRO"]
+selected_page = st.radio("섹션", section_pages, index=0, horizontal=True, label_visibility="collapsed")
 
-st.sidebar.divider()
 st.sidebar.subheader("실험 설정")
 selected_model = st.sidebar.selectbox("예측 모델", available_models, index=default_model_index)
 scenario_options = {
-    "기준 시나리오": {"return_shift": 0.0, "vol_multiplier": 1.0, "description": "모델 예측값을 그대로 사용합니다."},
-    "금리·물가 상승": {"return_shift": -0.0010, "vol_multiplier": 1.12, "description": "긴축과 비용 부담으로 기대수익률을 낮추고 변동성을 높입니다."},
-    "유가 급등": {"return_shift": -0.0006, "vol_multiplier": 1.10, "description": "에너지 가격 충격으로 전반적 위험을 확대합니다."},
-    "달러 강세": {"return_shift": -0.0004, "vol_multiplier": 1.07, "description": "환율 부담과 글로벌 유동성 압력을 반영합니다."},
-    "위험 완화": {"return_shift": 0.0005, "vol_multiplier": 0.92, "description": "거시 불확실성이 낮아지는 완화적 환경을 가정합니다."},
+    "기준 시나리오": {"return_shift": 0.0, "vol_multiplier": 1.0, "description": "모델 예측값 원안 사용"},
+    "금리·물가 상승": {"return_shift": -0.0010, "vol_multiplier": 1.12, "description": "긴축과 비용 부담에 따른 수익률 하향, 변동성 상향"},
+    "유가 급등": {"return_shift": -0.0006, "vol_multiplier": 1.10, "description": "에너지 가격 충격에 따른 전반적 위험 확대"},
+    "달러 강세": {"return_shift": -0.0004, "vol_multiplier": 1.07, "description": "환율 부담과 글로벌 유동성 압력 반영"},
+    "위험 완화": {"return_shift": 0.0005, "vol_multiplier": 0.92, "description": "거시 불확실성 완화 환경 가정"},
 }
 selected_scenario = st.sidebar.selectbox("거시경제 시나리오", list(scenario_options.keys()))
 scenario = scenario_options[selected_scenario]
@@ -184,37 +179,37 @@ def render_intro() -> None:
             <div class="goal-card">
                 <div class="goal-index">01</div>
                 <div class="goal-title">혼합 주기 결합</div>
-                <div class="goal-text">일별 M7 주가와 월별 거시지표를 영업일 기준 학습 데이터로 통합합니다.</div>
+                <div class="goal-text">일별 M7 주가와 월별 거시지표를 영업일 기준 학습 데이터로 통합</div>
             </div>
             <div class="goal-card">
                 <div class="goal-index">02</div>
                 <div class="goal-title">장단기 변동성 분해</div>
-                <div class="goal-text">단기 주가 충격과 장기 거시 압력을 GARCH-MIDAS 구조로 분리합니다.</div>
+                <div class="goal-text">단기 주가 충격과 장기 거시 압력을 GARCH-MIDAS 구조로 분리</div>
             </div>
             <div class="goal-card">
                 <div class="goal-index">03</div>
                 <div class="goal-title">포트폴리오 최적화</div>
-                <div class="goal-text">예상 수익률과 예측 변동성으로 Markowitz 최적 비중을 계산합니다.</div>
+                <div class="goal-text">예상 수익률과 예측 변동성으로 Markowitz 최적 비중 산출</div>
             </div>
             <div class="goal-card">
                 <div class="goal-index">04</div>
                 <div class="goal-title">자동화 대시보드</div>
-                <div class="goal-text">수집, 전처리, 예측, 리밸런싱, 표출 과정을 Streamlit으로 통합합니다.</div>
+                <div class="goal-text">수집, 전처리, 예측, 리밸런싱, 표출 과정을 Streamlit으로 통합</div>
             </div>
         </div>
         <div class="pipeline">
             데이터 수집 → 전처리/주기 정렬 → 예측 모델 → Markowitz 최적화 → 대시보드 표출
         </div>
         <div class="pipeline-note">
-            왼쪽 탭을 따라가면 문제 배경, 데이터 흐름, 결과, 한계와 확장 방향 순서로 발표할 수 있습니다.
+            상단 섹션 버튼 기준으로 문제 배경, 데이터 흐름, 결과, 한계와 확장 방향 순서 발표
         </div>
         """,
         unsafe_allow_html=True,
     )
     st.subheader("발표 핵심 메시지")
     st.write(
-        "이 프로젝트는 서로 주기가 다른 금융·거시 데이터를 하나의 일별 학습 테이블로 정렬하고, "
-        "예측된 수익률과 변동성을 포트폴리오 의사결정으로 연결하는 자동화 파이프라인입니다."
+        "서로 주기가 다른 금융·거시 데이터를 하나의 일별 학습 테이블로 정렬. "
+        "예측 수익률과 변동성을 포트폴리오 의사결정으로 연결하는 자동화 파이프라인."
     )
 
 
@@ -223,41 +218,41 @@ def render_background() -> None:
     st.subheader("참고 논문")
     st.markdown(
         """
-        **이영임(2017), 「거시경제 변수를 이용한 미국 주식시장 변동성 예측」**을 주요 배경 연구로 참고했습니다.
+        이영임(2017), 「거시경제 변수를 이용한 미국 주식시장 변동성 예측」을 주요 배경 연구로 참고.
 
-        - 해당 논문은 Engle et al.(2013)의 GARCH-MIDAS 접근을 이용해 미국 주식시장 변동성을 예측했습니다.
-        - 변동성을 단기적인 시장 충격 성분과 거시경제 변수에 의해 움직이는 장기 지속 성분으로 분해했습니다.
-        - 산업생산, 물가, 국제유가, 환율 같은 거시 변수가 장기 변동성 예측에 유의미한 정보를 제공한다고 설명합니다.
-        - 거시 변수를 포함한 GARCH-MIDAS가 단순 GARCH(1,1)보다 변동성 예측 성능이 개선되는 결과를 제시했습니다.
-        - 평가는 MSE, MAE, QLIKE를 사용했으며, 특히 QLIKE는 변동성을 과소예측할 때의 위험을 더 민감하게 반영하는 지표입니다.
+        - Engle et al.(2013)의 GARCH-MIDAS 접근으로 미국 주식시장 변동성 예측.
+        - 변동성을 단기 시장 충격 성분과 거시경제 기반 장기 지속 성분으로 분해.
+        - 산업생산, 물가, 국제유가, 환율 등 거시 변수가 장기 변동성 예측에 유의미한 정보 제공.
+        - 거시 변수를 포함한 GARCH-MIDAS가 단순 GARCH(1,1) 대비 예측 성능 개선.
+        - MSE, MAE, QLIKE로 평가. QLIKE는 변동성 과소예측 위험에 민감한 지표.
         """
     )
     st.subheader("프로젝트 반영점")
     st.markdown(
         """
-        - 논문의 핵심 아이디어처럼 **일별 M7 주가 데이터**와 **월별·일별 거시경제 지표**를 하나의 학습 테이블로 결합했습니다.
-        - GARCH-MIDAS 구조를 사용해 변동성을 **단기 변동성**과 **장기 거시 압력**으로 나누어 해석할 수 있게 만들었습니다.
-        - 기준금리, CPI, M2, PPI, 산업생산, WTI 유가, 환율, 달러지수, VIX를 거시 변수 후보로 확장했습니다.
-        - GARCH-MIDAS뿐 아니라 Ridge, RandomForest, ExtraTrees, GradientBoosting, SVR, KNN과 비교해 모델 성능을 확인합니다.
+        - 일별 M7 주가 데이터와 월별·일별 거시경제 지표를 하나의 학습 테이블로 결합.
+        - GARCH-MIDAS 구조로 변동성을 단기 변동성과 장기 거시 압력으로 분해.
+        - 기준금리, CPI, M2, PPI, 산업생산, WTI 유가, 환율, 달러지수, VIX를 거시 변수 후보로 확장.
+        - GARCH-MIDAS와 Ridge, RandomForest, ExtraTrees, GradientBoosting, SVR, KNN 성능 비교.
         """
     )
     st.subheader("왜 혼합 빈도 데이터인가?")
     st.write(
-        "주가는 거래일마다 변하지만, 기준금리·CPI·M2·PPI·산업생산 같은 거시지표는 월별로 발표됩니다. "
-        "이 프로젝트는 일별 주가와 저빈도 거시지표를 정보 손실 없이 결합해 장기 위험 요인을 모델에 반영합니다."
+        "주가는 거래일마다 변동. 기준금리·CPI·M2·PPI·산업생산 등 거시지표는 주로 월별 발표. "
+        "일별 주가와 저빈도 거시지표를 결합해 장기 위험 요인을 모델에 반영."
     )
     st.subheader("왜 GARCH-MIDAS인가?")
     st.write(
-        "GARCH-MIDAS는 변동성을 단기 주가 충격과 장기 거시경제 압력으로 분해합니다. "
-        "대시보드의 GARCH-MIDAS 선택 시 단기 변동성, 장기 거시 압력, 최종 예측 변동성을 따로 확인할 수 있습니다."
+        "GARCH-MIDAS는 변동성을 단기 주가 충격과 장기 거시경제 압력으로 분해. "
+        "GARCH-MIDAS 선택 시 단기 변동성, 장기 거시 압력, 최종 예측 변동성 분리 확인."
     )
     st.subheader("비교 모델")
     st.write(
-        "Ridge, RandomForest, ExtraTrees, GradientBoosting, SVR, KNN, GARCH-MIDAS를 비교합니다. "
-        "MSE, MAE, QLIKE로 수익률 및 변동성 예측 오차를 평가합니다."
+        "Ridge, RandomForest, ExtraTrees, GradientBoosting, SVR, KNN, GARCH-MIDAS 비교. "
+        "MSE, MAE, QLIKE 기준 수익률 및 변동성 예측 오차 평가."
     )
     st.info(
-        f"현재 선택 모델은 `{selected_model}`, 선택 시나리오는 `{selected_scenario}`입니다. "
+        f"현재 선택 모델: `{selected_model}` / 선택 시나리오: `{selected_scenario}`. "
         f"{scenario['description']}"
     )
 
@@ -267,10 +262,10 @@ def render_dataflow() -> None:
     st.subheader("수집 및 정렬 구조")
     st.markdown(
         """
-        - **주가 데이터:** yfinance 기반 M7 일별 OHLCV 및 로그수익률
-        - **거시 데이터:** FRED, BLS, Federal Reserve, Yahoo Finance 기반 지표
-        - **전처리:** 월별 지표를 영업일 기준으로 확장하고 forward-fill 및 보간
-        - **최종 데이터:** 일별 주가와 거시지표가 결합된 학습 테이블
+        - 주가 데이터: yfinance 기반 M7 일별 OHLCV 및 로그수익률
+        - 거시 데이터: FRED, BLS, Federal Reserve, Yahoo Finance 기반 지표
+        - 전처리: 월별 지표를 영업일 기준으로 확장, forward-fill 및 보간
+        - 최종 데이터: 일별 주가와 거시지표가 결합된 학습 테이블
         """
     )
     if not macro_sources.empty:
@@ -299,15 +294,15 @@ def render_dataflow() -> None:
         )
         st.dataframe(params_table, use_container_width=True, hide_index=True)
         st.caption(
-            "각 종목의 학습 구간 일부를 검증 구간으로 떼어 두고, 변동성 MAE가 가장 낮은 파라미터 조합을 선택했습니다."
+            "각 종목의 학습 구간 일부를 검증 구간으로 분리. 변동성 MAE가 가장 낮은 파라미터 조합 선택."
         )
 
 
 def render_result() -> None:
     st.title("RESULT")
     st.caption(
-        f"`{selected_model}` 모델과 `{selected_scenario}`가 적용된 결과입니다. "
-        f"수익률 조정 {scenario['return_shift'] * 100:.2f}%p, 변동성 배율 {scenario['vol_multiplier']:.2f}배가 반영됩니다."
+        f"`{selected_model}` 모델 / `{selected_scenario}` 시나리오 적용 결과. "
+        f"수익률 조정 {scenario['return_shift'] * 100:.2f}%p, 변동성 배율 {scenario['vol_multiplier']:.2f}배 반영."
     )
 
     metric_left, metric_middle, metric_right = st.columns(3)
@@ -321,16 +316,16 @@ def render_result() -> None:
     top_risk = weights.loc[weights["predicted_volatility"].idxmax()]
 
     with st.container(border=True):
-        st.markdown("**포트폴리오 자동 해석**")
+        st.markdown("포트폴리오 자동 해석")
         st.markdown(
-            f"`{selected_model}` 기준 최적 포트폴리오는 `{top_weight['ticker']}` 비중이 가장 높습니다 "
+            f"`{selected_model}` 기준 최적 포트폴리오는 `{top_weight['ticker']}` 비중이 가장 높음 "
             f"({top_weight['weight'] * 100:.1f}%). 이는 예측 수익률과 예측 변동성을 함께 고려했을 때 "
-            "위험 대비 기여도가 가장 높게 평가되었기 때문입니다."
+            "위험 대비 기여도가 가장 높게 평가된 결과."
         )
         st.markdown(
             f"예상 수익률이 가장 높은 종목은 `{top_return['ticker']}`({top_return['expected_return'] * 100:.2f}%)이고, "
-            f"예측 변동성이 가장 높은 종목은 `{top_risk['ticker']}`({top_risk['predicted_volatility'] * 100:.2f}%)입니다. "
-            f"`{bottom_weight['ticker']}`는 가장 낮은 비중({bottom_weight['weight'] * 100:.1f}%)을 받았습니다."
+            f"예측 변동성이 가장 높은 종목은 `{top_risk['ticker']}`({top_risk['predicted_volatility'] * 100:.2f}%). "
+            f"`{bottom_weight['ticker']}`는 최저 비중({bottom_weight['weight'] * 100:.1f}%)."
         )
 
     left, right = st.columns([1, 1])
@@ -338,7 +333,7 @@ def render_result() -> None:
         st.subheader("포트폴리오 투자 비중")
         fig = px.pie(weights, names="ticker", values="weight", hole=0.45, labels={"ticker": "종목", "weight": "투자 비중"})
         st.plotly_chart(fig, use_container_width=True)
-        st.caption("비중이 클수록 선택한 모델 기준으로 위험 대비 기대수익이 높게 평가된 자산입니다.")
+        st.caption("비중이 클수록 선택 모델 기준 위험 대비 기대수익이 높게 평가된 자산.")
 
     with right:
         st.subheader("최근 예측 결과")
@@ -389,7 +384,7 @@ def render_result() -> None:
         )
         st.plotly_chart(decomposition_fig, use_container_width=True)
         st.caption(
-            "장기 거시 압력은 변동성에 곱해지는 위험 배율입니다. 1.05는 거시 환경이 단기 변동성을 약 5% 확대한다는 의미입니다."
+            "장기 거시 압력은 변동성에 곱해지는 위험 배율. 1.05는 거시 환경이 단기 변동성을 약 5% 확대한다는 의미."
         )
 
     frontier = efficient_frontier(model_predictions)
@@ -397,7 +392,7 @@ def render_result() -> None:
         st.subheader("효율적 투자선")
         frontier_fig = px.line(frontier, x="risk", y="target_return", labels={"risk": "위험", "target_return": "목표 수익률"})
         st.plotly_chart(frontier_fig, use_container_width=True)
-        st.caption("최소분산 포트폴리오 이후, 위험을 더 부담할 때 기대수익률이 높아지는 위쪽 효율 경계입니다.")
+        st.caption("최소분산 포트폴리오 이후, 위험을 더 부담할 때 기대수익률이 높아지는 위쪽 효율 경계.")
 
     rebalancing_history = optimize_rebalancing_history(model_predictions, days=60)
     if not rebalancing_history.empty:
@@ -492,7 +487,7 @@ def render_outro() -> None:
         - 시나리오별 종목 민감도와 백테스트 성과 지표 추가
         """
     )
-    st.success("현재 버전은 발표용으로 전체 파이프라인 흐름과 핵심 결과를 설명할 수 있는 상태입니다.")
+    st.success("현재 버전은 발표용 전체 파이프라인 흐름과 핵심 결과 설명 가능 상태.")
 
 
 if selected_page == "INTRO":
