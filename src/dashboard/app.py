@@ -647,6 +647,10 @@ def render_result() -> None:
         )
         st.dataframe(metrics_table, use_container_width=True, hide_index=True)
         st.caption("MSE, MAE, QLIKE는 모두 낮을수록 좋습니다.")
+        st.info(
+            "QLIKE는 변동성 예측 전용 손실 지표. 실제 변동성이 큰데 모델이 위험을 낮게 예측하는 과소예측 상황에 더 민감. "
+            "포트폴리오 관점에서는 손실 가능성을 작게 보는 모델을 걸러내는 보조 기준."
+        )
 
 
 def render_outro() -> None:
