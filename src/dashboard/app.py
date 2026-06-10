@@ -171,7 +171,7 @@ garch_midas_params = pd.read_csv(garch_midas_params_path) if garch_midas_params_
 available_models = sorted(predictions["model"].unique()) if "model" in predictions.columns else ["RandomForest"]
 default_model_index = available_models.index("GARCH-MIDAS") if "GARCH-MIDAS" in available_models else 0
 
-section_pages = ["INTRO", "BACKGROUND", "DATAFLOW", "RESULT", "OUTRO"]
+section_pages = ["인트로", "배경", "데이터 흐름", "결과", "마무리"]
 if "selected_page" not in st.session_state:
     st.session_state.selected_page = section_pages[0]
 if st.session_state.selected_page not in section_pages:
@@ -263,7 +263,7 @@ def render_intro() -> None:
 
 
 def render_background() -> None:
-    st.title("BACKGROUND")
+    st.title("배경")
     st.subheader("참고 논문")
     st.markdown(
         """
@@ -307,7 +307,7 @@ def render_background() -> None:
 
 
 def render_dataflow() -> None:
-    st.title("DATAFLOW")
+    st.title("데이터 흐름")
     st.subheader("수집 및 정렬 구조")
     st.markdown(
         """
@@ -348,7 +348,7 @@ def render_dataflow() -> None:
 
 
 def render_result() -> None:
-    st.title("RESULT")
+    st.title("결과")
     st.caption(
         f"`{selected_model}` 모델 / `{selected_scenario}` 시나리오 적용 결과. "
         f"수익률 조정 {scenario['return_shift'] * 100:.2f}%p, 변동성 배율 {scenario['vol_multiplier']:.2f}배 반영."
@@ -517,7 +517,7 @@ def render_result() -> None:
 
 
 def render_outro() -> None:
-    st.title("OUTRO")
+    st.title("마무리")
     st.subheader("기획서 목표 대비 달성 내용")
     st.markdown(
         """
@@ -539,13 +539,13 @@ def render_outro() -> None:
     st.success("현재 버전은 발표용 전체 파이프라인 흐름과 핵심 결과 설명 가능 상태.")
 
 
-if selected_page == "INTRO":
+if selected_page == "인트로":
     render_intro()
-elif selected_page == "BACKGROUND":
+elif selected_page == "배경":
     render_background()
-elif selected_page == "DATAFLOW":
+elif selected_page == "데이터 흐름":
     render_dataflow()
-elif selected_page == "RESULT":
+elif selected_page == "결과":
     render_result()
 else:
     render_outro()
