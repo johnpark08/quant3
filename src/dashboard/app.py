@@ -220,6 +220,27 @@ def render_intro() -> None:
 
 def render_background() -> None:
     st.title("BACKGROUND")
+    st.subheader("참고 논문")
+    st.markdown(
+        """
+        **이영임(2017), 「거시경제 변수를 이용한 미국 주식시장 변동성 예측」**을 주요 배경 연구로 참고했습니다.
+
+        - 해당 논문은 Engle et al.(2013)의 GARCH-MIDAS 접근을 이용해 미국 주식시장 변동성을 예측했습니다.
+        - 변동성을 단기적인 시장 충격 성분과 거시경제 변수에 의해 움직이는 장기 지속 성분으로 분해했습니다.
+        - 산업생산, 물가, 국제유가, 환율 같은 거시 변수가 장기 변동성 예측에 유의미한 정보를 제공한다고 설명합니다.
+        - 거시 변수를 포함한 GARCH-MIDAS가 단순 GARCH(1,1)보다 변동성 예측 성능이 개선되는 결과를 제시했습니다.
+        - 평가는 MSE, MAE, QLIKE를 사용했으며, 특히 QLIKE는 변동성을 과소예측할 때의 위험을 더 민감하게 반영하는 지표입니다.
+        """
+    )
+    st.subheader("프로젝트 반영점")
+    st.markdown(
+        """
+        - 논문의 핵심 아이디어처럼 **일별 M7 주가 데이터**와 **월별·일별 거시경제 지표**를 하나의 학습 테이블로 결합했습니다.
+        - GARCH-MIDAS 구조를 사용해 변동성을 **단기 변동성**과 **장기 거시 압력**으로 나누어 해석할 수 있게 만들었습니다.
+        - 기준금리, CPI, M2, PPI, 산업생산, WTI 유가, 환율, 달러지수, VIX를 거시 변수 후보로 확장했습니다.
+        - GARCH-MIDAS뿐 아니라 Ridge, RandomForest, ExtraTrees, GradientBoosting, SVR, KNN과 비교해 모델 성능을 확인합니다.
+        """
+    )
     st.subheader("왜 혼합 빈도 데이터인가?")
     st.write(
         "주가는 거래일마다 변하지만, 기준금리·CPI·M2·PPI·산업생산 같은 거시지표는 월별로 발표됩니다. "
