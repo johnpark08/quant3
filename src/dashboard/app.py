@@ -1,8 +1,15 @@
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
 import pandas as pd
 import plotly.express as px
 import streamlit as st
+
+PROJECT_ROOT_FOR_IMPORTS = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT_FOR_IMPORTS) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT_FOR_IMPORTS))
 
 from src.portfolio.optimizer import efficient_frontier
 from src.portfolio.optimizer import optimize_latest_portfolio
