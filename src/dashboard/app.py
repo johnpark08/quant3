@@ -23,7 +23,38 @@ st.set_page_config(page_title="AI 변동성 포트폴리오 대시보드", layou
 st.markdown(
     """
     <style>
-    .block-container { padding-top: 1.4rem; padding-bottom: 2.4rem; }
+    .block-container { padding-top: 3rem; padding-bottom: 2.4rem; }
+    div[data-testid="stButton"] > button {
+        border: 1px solid rgba(148, 163, 184, 0.34);
+        border-radius: 999px;
+        min-height: 42px;
+        background: rgba(15, 23, 42, 0.46);
+        color: #cbd5e1;
+        font-weight: 760;
+        letter-spacing: 0;
+    }
+    div[data-testid="stButton"] > button:hover {
+        border-color: rgba(56, 189, 248, 0.72);
+        color: #f8fafc;
+        background: rgba(8, 47, 73, 0.44);
+    }
+    div[data-testid="stButton"] > button[kind="primary"] {
+        border-color: #38bdf8;
+        background: #38bdf8;
+        color: #020617;
+    }
+    div[data-testid="stButton"] > button[kind="primary"]:hover {
+        border-color: #7dd3fc;
+        background: #7dd3fc;
+        color: #020617;
+    }
+    .section-nav-label {
+        color: #94a3b8;
+        font-size: 0.78rem;
+        font-weight: 700;
+        margin: 0 0 8px;
+    }
+    .section-nav-bottom { margin-bottom: 18px; }
     div[data-testid="stMetric"] {
         border: 1px solid rgba(148, 163, 184, 0.22);
         border-radius: 8px;
@@ -141,7 +172,25 @@ available_models = sorted(predictions["model"].unique()) if "model" in predictio
 default_model_index = available_models.index("GARCH-MIDAS") if "GARCH-MIDAS" in available_models else 0
 
 section_pages = ["INTRO", "BACKGROUND", "DATAFLOW", "RESULT", "OUTRO"]
-selected_page = st.radio("섹션", section_pages, index=0, horizontal=True, label_visibility="collapsed")
+if "selected_page" not in st.session_state:
+    st.session_state.selected_page = section_pages[0]
+if st.session_state.selected_page not in section_pages:
+    st.session_state.selected_page = section_pages[0]
+
+st.markdown('<div class="section-nav-label">SECTION</div>', unsafe_allow_html=True)
+nav_columns = st.columns(len(section_pages), gap="small")
+for page, column in zip(section_pages, nav_columns):
+    with column:
+        if st.button(
+            page,
+            key=f"section_nav_{page}",
+            type="primary" if st.session_state.selected_page == page else "secondary",
+            use_container_width=True,
+        ):
+            st.session_state.selected_page = page
+            st.rerun()
+st.markdown('<div class="section-nav-bottom"></div>', unsafe_allow_html=True)
+selected_page = st.session_state.selected_page
 
 st.sidebar.subheader("실험 설정")
 selected_model = st.sidebar.selectbox("예측 모델", available_models, index=default_model_index)
