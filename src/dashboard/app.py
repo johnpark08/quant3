@@ -456,6 +456,18 @@ def render_dataflow() -> None:
 
     if not garch_midas_params.empty:
         st.subheader("GARCH-MIDAS 선택 파라미터")
+        st.markdown(
+            """
+            - omega: 변동성의 기본 수준. 시장 충격이 없을 때 남는 최소 위험 크기.
+            - alpha: 최근 충격 반영 정도. 값이 클수록 당일 급등락이 변동성에 빠르게 반영.
+            - beta: 변동성 지속성. 값이 클수록 한번 커진 위험이 오래 유지.
+            - 거시 가중치: 장기 거시 압력이 최종 변동성에 반영되는 비중.
+            - MIDAS 기간: 장기 거시 압력을 계산할 때 참고한 과거 기간 길이.
+            - 수익률 평균 기간: 기대수익률 산출에 사용한 최근 수익률 평균 구간.
+            - 변동성 스케일: 예측 변동성 크기를 실제 데이터 수준에 맞추는 보정 계수.
+            - 검증 변동성 MAE: 검증 구간에서 실제 변동성과 예측 변동성의 평균 절대 오차.
+            """
+        )
         params_table = garch_midas_params.rename(
             columns={
                 "ticker": "종목",
