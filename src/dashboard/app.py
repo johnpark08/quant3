@@ -553,6 +553,10 @@ def render_result() -> None:
         )
     )
     st.plotly_chart(trend, use_container_width=True)
+    st.info(
+        "해석: 실제 다음날 수익률은 단기 뉴스와 시장 심리에 의해 크게 흔들리므로 예측값보다 변동성이 큼. "
+        "본 모델의 목적은 하루 단위 급등락을 모두 맞추는 것이 아니라 평균적인 수익률 방향과 변동성 위험을 추정해 포트폴리오 비중 결정에 활용하는 것."
+    )
 
     if selected_model == "GARCH-MIDAS" and {"short_run_volatility", "long_run_macro_component"}.issubset(ticker_predictions.columns):
         st.subheader("장단기 변동성 분해")
