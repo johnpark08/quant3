@@ -119,11 +119,81 @@ st.markdown(
         margin-bottom: 8px;
     }
     .pipeline-note { color: #94a3b8; font-size: 0.86rem; margin-bottom: 18px; }
+    .flow-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin: 8px 0 18px;
+    }
+    .flow-step {
+        border: 1px solid rgba(148, 163, 184, 0.24);
+        border-radius: 8px;
+        padding: 15px 15px 14px;
+        background: rgba(15, 23, 42, 0.22);
+        min-height: 148px;
+        position: relative;
+    }
+    .flow-step::after {
+        content: ">";
+        position: absolute;
+        right: -11px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #38bdf8;
+        font-weight: 900;
+    }
+    .flow-step:last-child::after { content: ""; }
+    .flow-tag {
+        color: #38bdf8;
+        font-size: 0.75rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+    .flow-title {
+        color: #f8fafc;
+        font-size: 1rem;
+        font-weight: 780;
+        margin-bottom: 8px;
+    }
+    .flow-text {
+        color: #cbd5e1;
+        font-size: 0.86rem;
+        line-height: 1.55;
+    }
+    .logic-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin: 8px 0 18px;
+    }
+    .logic-card {
+        border-left: 3px solid #38bdf8;
+        border-radius: 8px;
+        padding: 14px 15px;
+        background: rgba(8, 47, 73, 0.2);
+        min-height: 128px;
+    }
+    .logic-title {
+        color: #f8fafc;
+        font-weight: 780;
+        margin-bottom: 7px;
+    }
+    .logic-text {
+        color: #cbd5e1;
+        font-size: 0.86rem;
+        line-height: 1.55;
+    }
     @media (max-width: 900px) {
         .goal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .flow-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .logic-grid { grid-template-columns: 1fr; }
+        .flow-step::after { content: ""; }
         .dash-title { font-size: 1.75rem; }
     }
-    @media (max-width: 560px) { .goal-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 560px) {
+        .goal-grid { grid-template-columns: 1fr; }
+        .flow-grid { grid-template-columns: 1fr; }
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -311,32 +381,78 @@ def render_background() -> None:
 
 def render_dataflow() -> None:
     st.title("데이터 흐름")
-    st.subheader("수집 및 정렬 구조")
     st.markdown(
         """
-        - 주가 데이터: yfinance 기반 M7 일별 OHLCV 및 로그수익률
-        - 거시 데이터: FRED, BLS, Federal Reserve, Yahoo Finance 기반 지표
-        - 전처리: 월별 지표를 영업일 기준으로 확장, forward-fill 및 보간
-        - 최종 데이터: 일별 주가와 거시지표가 결합된 학습 테이블
+        <div class="flow-grid">
+            <div class="flow-step">
+                <div class="flow-tag">STEP 01</div>
+                <div class="flow-title">주가 수집</div>
+                <div class="flow-text">yfinance 기반 M7 일별 OHLCV와 로그수익률 생성</div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-tag">STEP 02</div>
+                <div class="flow-title">거시지표 수집</div>
+                <div class="flow-text">금리, CPI, M2, PPI, 산업생산, 유가, 환율, VIX 수집</div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-tag">STEP 03</div>
+                <div class="flow-title">혼합 빈도 정렬</div>
+                <div class="flow-text">월별 지표를 영업일 기준으로 확장하고 결측 구간 보정</div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-tag">STEP 04</div>
+                <div class="flow-title">학습 테이블 생성</div>
+                <div class="flow-text">일별 주가와 거시 변수를 결합해 모델 입력 데이터 구성</div>
+            </div>
+        </div>
         """
+        ,
+        unsafe_allow_html=True,
     )
     st.subheader("전처리 정당성")
     st.markdown(
         """
-        - 거시지표를 원자료 그대로 투입하면 예측 성능이 약해질 수 있음.
-        - 산업생산처럼 방향성보다 변동성 필드가 더 유용한 지표 존재.
-        - Schwert(1989) 방식의 거시 변수 변동성 가공은 장기 위험 설명력을 높이는 핵심 단계.
-        - 전처리는 결측치 보정 작업이 아니라 모델 입력 신호를 정제하는 과정.
+        <div class="logic-grid">
+            <div class="logic-card">
+                <div class="logic-title">원자료 한계</div>
+                <div class="logic-text">거시지표를 그대로 투입하면 발표 주기 차이와 노이즈가 예측 성능을 약화할 수 있음.</div>
+            </div>
+            <div class="logic-card">
+                <div class="logic-title">변동성 필드</div>
+                <div class="logic-text">산업생산처럼 방향성보다 지표 자체의 불확실성이 장기 위험 설명에 유용한 경우 존재.</div>
+            </div>
+            <div class="logic-card">
+                <div class="logic-title">모델 입력 정제</div>
+                <div class="logic-text">Schwert(1989) 방식의 거시 변수 변동성 가공으로 장기 위험 신호 강화.</div>
+            </div>
+        </div>
         """
+        ,
+        unsafe_allow_html=True,
     )
     if not macro_sources.empty:
         source_counts = macro_sources["source"].map(source_label).value_counts().to_dict()
-        st.caption("데이터 출처 요약: " + ", ".join([f"{source} {count}개" for source, count in source_counts.items()]))
+        st.subheader("거시지표 수집 상태")
+        source_count_frame = pd.DataFrame(
+            [{"데이터 출처": source, "지표 수": count} for source, count in source_counts.items()]
+        )
+        source_fig = px.bar(
+            source_count_frame,
+            x="데이터 출처",
+            y="지표 수",
+            text="지표 수",
+            color="데이터 출처",
+        )
+        source_fig.update_traces(textposition="outside")
+        source_fig.update_layout(showlegend=False, yaxis_title="지표 수", xaxis_title=None, margin=dict(t=20, b=10))
+        st.plotly_chart(source_fig, use_container_width=True)
+
         source_table = macro_sources.rename(
             columns={"indicator": "지표", "fred_code": "FRED 코드", "source": "데이터 출처", "rows": "행 수"}
         )
         source_table["데이터 출처"] = source_table["데이터 출처"].map(source_label)
-        st.dataframe(source_table, use_container_width=True, hide_index=True)
+        with st.expander("상세 수집 테이블 보기", expanded=False):
+            st.dataframe(source_table, use_container_width=True, hide_index=True)
 
     if not garch_midas_params.empty:
         st.subheader("GARCH-MIDAS 선택 파라미터")
