@@ -1,6 +1,6 @@
-# AI Volatility Portfolio MVP
+# AI퀀트 3기 Volatility Portfolio 
 
-혼자서 DAS, DSS, JPS, WSS 파트를 순서대로 진행할 수 있도록 만든 최소 실행형 프로젝트입니다.
+ DAS, DSS, JPS, WSS 파트를 순서대로 진행할 수 있도록 만든 최소 실행형 프로젝트입니다.
 
 ## 실행 순서
 
