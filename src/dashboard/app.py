@@ -609,7 +609,7 @@ def render_result() -> None:
         st.plotly_chart(rebalancing_fig, use_container_width=True)
 
     if not metrics.empty:
-        st.subheader("모델 성능 요약")
+        st.subheader("모델 예측 성능 요약")
         model_summary = (
             metrics.groupby("model", as_index=False)[
                 ["return_mse", "return_mae", "volatility_mse", "volatility_mae", "volatility_qlike"]
@@ -643,6 +643,12 @@ def render_result() -> None:
             ),
             use_container_width=True,
             hide_index=True,
+        )
+        st.info(
+            "해석: Ridge는 규제 기반 선형 모델이라 짧은 검증 구간에서 과적합이 작고 예측값이 안정적. "
+            "ExtraTrees와 RandomForest는 비선형 패턴을 잘 잡지만 변동성 예측에서는 일부 종목의 오차가 커질 수 있음. "
+            "GARCH-MIDAS는 수익률 예측 오차는 낮은 편이나, 장기 거시 압력을 완만하게 반영하는 구조라 단기 변동성 급등락을 즉시 따라가는 데 한계. "
+            "따라서 최우수 모델은 아니지만 단기 위험과 장기 거시 위험을 분리해 설명하는 해석용 모델로 의미가 큼."
         )
 
         st.subheader("모델 성능 지표")
