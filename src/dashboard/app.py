@@ -647,11 +647,6 @@ def render_result() -> None:
         )
         st.dataframe(metrics_table, use_container_width=True, hide_index=True)
         st.caption("MSE, MAE, QLIKE는 모두 낮을수록 좋습니다.")
-        st.info(
-            "발표 해석: GARCH-MIDAS 계열은 GARCH(1,1) 대비 거시경제 정보를 추가해 장기 위험을 설명. "
-            "유가와 PPI는 비용·인플레이션 압력을 반영하는 대표 변수. "
-            "IP(v)는 산업생산의 방향보다 거시 불확실성 자체가 중요함을 보여주는 전처리 근거."
-        )
 
 
 def render_outro() -> None:
