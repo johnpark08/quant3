@@ -174,11 +174,10 @@ def render_intro() -> None:
     st.markdown(
         """
         <section class="dash-hero">
-            <div class="dash-kicker">이스트캠프 AI퀀트 3기 6조</div>
-            <div class="dash-title">AI 변동성 포트폴리오 대시보드</div>
+            <div class="dash-kicker">6조 / 금정호(조장), 정총균, 박성준, 박진철</div>
+            <div class="dash-title">혼합 빈도 거시경제 지표 기반 테크 대장주 변동성 예측 및 포트폴리오 최적화</div>
             <div class="dash-subtitle">
-                M7 일별 주가와 거시경제 지표를 결합해 장단기 변동성을 예측하고,
-                Markowitz 평균-분산 최적화로 위험 대비 수익이 높은 포트폴리오 비중을 계산합니다.
+                GARCH-MIDAS로 일별 노이즈와 거시경제가 만드는 장기 위험 분리
             </div>
         </section>
         <div class="goal-grid">
