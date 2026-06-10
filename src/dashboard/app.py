@@ -255,11 +255,6 @@ def render_intro() -> None:
         """,
         unsafe_allow_html=True,
     )
-    st.subheader("발표 핵심 메시지")
-    st.write(
-        "서로 주기가 다른 금융·거시 데이터를 하나의 일별 학습 테이블로 정렬. "
-        "예측 수익률과 변동성을 포트폴리오 의사결정으로 연결하는 자동화 파이프라인."
-    )
 
 
 def render_background() -> None:
@@ -295,6 +290,14 @@ def render_background() -> None:
         "GARCH-MIDAS는 변동성을 단기 주가 충격과 장기 거시경제 압력으로 분해. "
         "GARCH-MIDAS 선택 시 단기 변동성, 장기 거시 압력, 최종 예측 변동성 분리 확인."
     )
+    st.subheader("금정호 발표자료 반영 포인트")
+    st.markdown(
+        """
+        - 프로젝트 목표는 단순 주가 예측이 아니라 단기 노이즈와 장기 거시 위험의 분리.
+        - GARCH(1,1)는 과거 변동성 패턴 중심. GARCH-MIDAS는 거시경제 변수를 장기 위험 추세에 연결.
+        - 유가, 물가, 산업생산 등 거시 변수를 결합하면 변동성 예측 오차가 낮아진다는 설명 근거 확보.
+        """
+    )
     st.subheader("비교 모델")
     st.write(
         "Ridge, RandomForest, ExtraTrees, GradientBoosting, SVR, KNN, GARCH-MIDAS 비교. "
@@ -315,6 +318,15 @@ def render_dataflow() -> None:
         - 거시 데이터: FRED, BLS, Federal Reserve, Yahoo Finance 기반 지표
         - 전처리: 월별 지표를 영업일 기준으로 확장, forward-fill 및 보간
         - 최종 데이터: 일별 주가와 거시지표가 결합된 학습 테이블
+        """
+    )
+    st.subheader("전처리 정당성")
+    st.markdown(
+        """
+        - 거시지표를 원자료 그대로 투입하면 예측 성능이 약해질 수 있음.
+        - 산업생산처럼 방향성보다 변동성 필드가 더 유용한 지표 존재.
+        - Schwert(1989) 방식의 거시 변수 변동성 가공은 장기 위험 설명력을 높이는 핵심 단계.
+        - 전처리는 결측치 보정 작업이 아니라 모델 입력 신호를 정제하는 과정.
         """
     )
     if not macro_sources.empty:
@@ -435,6 +447,11 @@ def render_result() -> None:
         st.caption(
             "장기 거시 압력은 변동성에 곱해지는 위험 배율. 1.05는 거시 환경이 단기 변동성을 약 5% 확대한다는 의미."
         )
+        st.info(
+            "해석: 단기 변동성은 기업 뉴스와 투자심리의 빠른 흔들림. "
+            "장기 거시 압력은 유가, 물가, 산업생산 등 거시 환경이 만드는 완만한 위험 추세. "
+            "최종 예측 변동성은 두 요인이 결합된 포트폴리오 위험 입력값."
+        )
 
     frontier = efficient_frontier(model_predictions)
     if not frontier.empty:
@@ -514,6 +531,11 @@ def render_result() -> None:
         )
         st.dataframe(metrics_table, use_container_width=True, hide_index=True)
         st.caption("MSE, MAE, QLIKE는 모두 낮을수록 좋습니다.")
+        st.info(
+            "발표 해석: GARCH-MIDAS 계열은 GARCH(1,1) 대비 거시경제 정보를 추가해 장기 위험을 설명. "
+            "유가와 PPI는 비용·인플레이션 압력을 반영하는 대표 변수. "
+            "IP(v)는 산업생산의 방향보다 거시 불확실성 자체가 중요함을 보여주는 전처리 근거."
+        )
 
 
 def render_outro() -> None:
@@ -526,6 +548,10 @@ def render_outro() -> None:
         - Markowitz 평균-분산 최적화와 효율적 투자선 구현
         - 모델 비교, 거시 시나리오, 리밸런싱 비중 변화까지 Streamlit으로 통합
         """
+    )
+    st.subheader("최종 결론")
+    st.write(
+        "거시경제 변수 결합과 장단기 변동성 분해를 통해 단순 예측이 아닌 위험 기반 포트폴리오 의사결정 구조 구현."
     )
     st.subheader("남은 확장 방향")
     st.markdown(
